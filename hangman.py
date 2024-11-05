@@ -143,7 +143,7 @@ def hangman():
                 print(f'The next unguessed letter is: {hints[1]}')
                 hint_given += 1
                 continue
-            
+
             time.sleep(1)
             
             
