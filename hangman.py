@@ -1,8 +1,14 @@
 from wonderwords import RandomWord
 import os
 import time
+import platform
 
-os.system('clear') #I do this so the console looks cleaner. Not really necessary
+def clearconsole(): #Used to clear console, this exists because linux and windows clear the console with different commands
+    if platform.system() == 'Linux' or platform.system() == 'Darwin':
+        os.system('clear') 
+    elif platform.system() == 'Windows':
+        os.system('cls')
+
 def clear_lines(n):
     #Clears the last 'n' lines in the terminal
     for _ in range(n):
@@ -77,6 +83,7 @@ def hangman():
             ''.join(word_length)
 
     word=list(word)
+    
     if '-' in word: 
         word.remove('-')
     print(word_length)
@@ -96,9 +103,9 @@ def hangman():
             vowel_count += 1
 
     guess_list = [] #Used to keep track of guesses the user has made
-    hints_given = [] #List to hold hints given, 
+    hints_given = ['Hints: '] #List to hold hints given, 
     incorrect = 0 #Used to count how many incorrect guesses the user has inputted
-    hint_length = 0
+    hint_given = 0
     print(HANGMANPICS[incorrect]) 
     newlength = word_length #newlength variable is for manipulating the word_length variable without directly changing it, used later 
     for und in list(word_length):
@@ -106,43 +113,52 @@ def hangman():
             idx3 = list(newlength).index(und)
             unknown_letter = word[idx3]
             break
-    hints = [1, unknown_letter] #List to hold hints
+    hints = ['placeholder', unknown_letter] #List to hold hints
+    
     while '_' in word_length: #Loop used for guessing, ends when the whole word is guessed
-        if incorrect > 5:  
+        if incorrect > 5:  #Check if the player has lost
             playagain=input(f"You lost! the word was {''.join(word)}. Would you like to play again? yes/no: ")
             if playagain == "yes":
-                os.system('clear')
+                clearconsole()
                 hangman()
             else:
                 quit()
+
         guess = input("Enter a letter or word you want to guess, or type hint for a hint: ")
         guess = guess.lower()
+        
         if guess.isalpha() == False: #Check for numbers in the input
             print("Numbers aren't letters.")
             time.sleep(1)
             clear_lines(2)
             continue
-        if guess == 'hint':
+        
+        if guess == 'hint': #Checks if user has inputted hint, and prints a hint based on how many times they've asked for one
             clear_lines(1)
             if len(hints_given) == 1:
+                print(f'There are {vowel_count} vowels in the word.')
+                hints_given.append(f'There is {vowel_count} vowel(s) in the word.')
+                continue
+            if hint_given == 0:
                 print(f'The next unguessed letter is: {hints[1]}')
-                if hint_length > 0: 
-                    hints_given.remove(hints_given[0])
-                    hint_length -= 1
-                hints_given.append(f'The next unguessed letter is: {hints[1]}')
-                hint_length += 1
-            continue
-        if guess in guess_list: 
+                hint_given += 1
+                continue
+            
+            time.sleep(1)
+            
+            
+        if guess in guess_list: #Checks if the user has already guessed a letter
             print("You already guessed that!")
             time.sleep(1)
             clear_lines(2)
             continue
+        
         if len(guess) > 1: #Checks if the user entered a word, and prints whether it's correct or not
             if guess == ''.join(word):
                 print("That's the right word!")
                 newgame2 = input("Would you like to play again? yes/no: ")
                 if newgame2 == 'yes':
-                    os.system('clear')
+                    clearconsole()
                     hangman()
                 else:
                     quit()
@@ -150,7 +166,7 @@ def hangman():
                 print(f"{guess} isn't the right word, sorry.")
                 time.sleep(1)
                 incorrect += 1
-                os.system('clear')
+                clearconsole()
                 print(newlength)
                 print(f"You've guessed the following letters: {','.join(guess_list)}")
                 print(''.join(hints_given))
@@ -168,8 +184,7 @@ def hangman():
             guess_list.append(guess)
             time.sleep(1)
             incorrect += 1
-            clear_lines(2)
-            os.system('clear')
+            clearconsole()
             print(newlength)
             print(f"You've guessed the following letters: {','.join(guess_list)}")
             print(''.join(hints_given))
@@ -180,7 +195,8 @@ def hangman():
             print(f'{guess} is in the word!')
             time.sleep(1)
             guess_list.append(guess)
-        os.system('clear')
+        clearconsole()
+        
         for i in word_mutable:
             idx2 += 1 #Used to index where the letter is in the word
             if guess in i:
@@ -197,22 +213,27 @@ def hangman():
             if guess_list.count(i) > 1: 
                 guess_list.remove(i)
         
-        for und in list(word_length):
+        for und in list(word_length): #This is for telling the next unguessed word, I have no idea why it has to be here and at the top of loop, it just does. ¯\_(:~)_/¯
             if und == '_':
                 idx3 = list(newlength).index(und)
                 unknown_letter = list(word)[idx3]
                 break
-        hints = [1, unknown_letter] #List to hold hints
+        
+        #hints = [1, unknown_letter] #List to hold hints
+        
         print(newlength)
         print(f"You've guessed the following letters: {','.join(guess_list)}")
         print(''.join(hints_given))
         print(HANGMANPICS[incorrect])
+        
         if '_' not in newlength: #Final check, used when the word is fully guessed
             print(f'Congratulations, you guessed the word! it was {''.join(word)}')
             newgame = input("Would you like to play again? yes/no: ")
             if newgame == 'yes':
-                os.system('clear')
+                clearconsole()
                 hangman()
             else:
                 quit()
+
+clearconsole()
 hangman()
