@@ -103,17 +103,24 @@ def hangman():
             vowel_count += 1
 
     guess_list = [] #Used to keep track of guesses the user has made
+    
     hints_given = ['Hints: '] #List to hold hints given, 
+    
     incorrect = 0 #Used to count how many incorrect guesses the user has inputted
+    
     hint_given = 0
+    
     print(HANGMANPICS[incorrect]) 
+    
     newlength = word_length #newlength variable is for manipulating the word_length variable without directly changing it, used later 
+    
     for und in list(word_length):
         if und == '_':
             idx3 = list(newlength).index(und)
             unknown_letter = word[idx3]
             break
-    hints = ['placeholder', unknown_letter] #List to hold hints
+        else:
+            continue
     
     while '_' in word_length: #Loop used for guessing, ends when the whole word is guessed
         if incorrect > 5:  #Check if the player has lost
@@ -212,12 +219,14 @@ def hangman():
             if guess_list.count(i) > 1: 
                 guess_list.remove(i)
         
-        for und in list(word_length): #This is for telling the next unguessed word, I have no idea why it has to be here and at the top of loop, it just does. ¯\_(:~)_/¯
+        for und in list(word_length): #This is for telling the next unguessed word. !!!!IT NEEDS TO BE HERE AND AT THE TOP OF THE LOOP FOR PROPER FUNCTIONALITY!!!!
             if und == '_':
                 idx3 = list(newlength).index(und)
                 unknown_letter = list(word)[idx3]
                 break
-        
+            else:
+                continue
+        hints = ['placeholder', unknown_letter] #List to hold hints
         #hints = [1, unknown_letter] #List to hold hints
         
         print(newlength)
