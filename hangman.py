@@ -87,7 +87,6 @@ def hangman():
     if '-' in word: 
         word.remove('-')
     print(word_length)
-    print(word)
     word_mutable = word #This variable is so the word can be manipulated without losing it
 
     vowel_count = 0 #Used for hints
