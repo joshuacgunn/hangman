@@ -80,8 +80,8 @@ def hangman():
     if '-' in word: 
         word.remove('-')
     print(word_length)
-
-    word2 = word #This variable is so the word can be manipulated without losing it
+    print(word)
+    word_mutable = word #This variable is so the word can be manipulated without losing it
 
     vowel_count = 0 #Used for hints
 
@@ -96,13 +96,17 @@ def hangman():
             vowel_count += 1
 
     guess_list = [] #Used to keep track of guesses the user has made
-    hints = [] #List to hold hints
     hints_given = [] #List to hold hints given, 
     incorrect = 0 #Used to count how many incorrect guesses the user has inputted
-    
+    hint_length = 0
     print(HANGMANPICS[incorrect]) 
     newlength = word_length #newlength variable is for manipulating the word_length variable without directly changing it, used later 
-    hints = 0
+    for und in list(word_length):
+        if und == '_':
+            idx3 = list(newlength).index(und)
+            unknown_letter = word[idx3]
+            break
+    hints = [1, unknown_letter] #List to hold hints
     while '_' in word_length: #Loop used for guessing, ends when the whole word is guessed
         if incorrect > 5:  
             playagain=input(f"You lost! the word was {''.join(word)}. Would you like to play again? yes/no: ")
@@ -118,15 +122,15 @@ def hangman():
             time.sleep(1)
             clear_lines(2)
             continue
-        if guess == 'hint' and hints == 0: #Checks if the user input is "hint", as well as the amount of hints used
+        if guess == 'hint':
             clear_lines(1)
-            print(f'There are {vowel_count} vowels in the word.')
-            hints += 1
-            continue
-        elif guess == 'hint' and hints == 1: 
-            clear_lines(1)
-            print(f'The first letter in the word is {word[0]}')
-            hints += 1
+            if len(hints_given) == 1:
+                print(f'The next unguessed letter is: {hints[1]}')
+                if hint_length > 0: 
+                    hints_given.remove(hints_given[0])
+                    hint_length -= 1
+                hints_given.append(f'The next unguessed letter is: {hints[1]}')
+                hint_length += 1
             continue
         if guess in guess_list: 
             print("You already guessed that!")
@@ -149,6 +153,7 @@ def hangman():
                 os.system('clear')
                 print(newlength)
                 print(f"You've guessed the following letters: {','.join(guess_list)}")
+                print(''.join(hints_given))
                 print(HANGMANPICS[incorrect])
                 continue
         
@@ -167,6 +172,7 @@ def hangman():
             os.system('clear')
             print(newlength)
             print(f"You've guessed the following letters: {','.join(guess_list)}")
+            print(''.join(hints_given))
             print(HANGMANPICS[incorrect])
             continue
 
@@ -174,23 +180,32 @@ def hangman():
             print(f'{guess} is in the word!')
             time.sleep(1)
             guess_list.append(guess)
-
-        for i in word2:
+        os.system('clear')
+        for i in word_mutable:
             idx2 += 1 #Used to index where the letter is in the word
             if guess in i:
-                idx=word2.index(guess) #Indexes where the guessed letter is 
+                idx=word_mutable.index(guess) #Indexes where the guessed letter is 
                 word_length[idx]=guess #Replaces the underscore where the letter is with the letter
-                word2.remove(i) #Removes the underscore where the guessed letter is 
-                word2.insert(idx2, ' ') #This is done so the word has the same length, which is needed for proper indexing 
+                word_mutable.remove(i) #Removes the underscore where the guessed letter is 
+                word_mutable.insert(idx2, ' ') #This is done so the word has the same length, which is needed for proper indexing 
                 newlength=''.join(word_length) #Variable that changes word_length into a string
+        
         if 'hint' in guess_list: #Removes the word hint from guess_list
             guess_list.remove('hint')
+        
         for i in guess_list: #This loop make sure the same letter doesn't appear in guess_list 
             if guess_list.count(i) > 1: 
                 guess_list.remove(i)
-        os.system('clear')
+        
+        for und in list(word_length):
+            if und == '_':
+                idx3 = list(newlength).index(und)
+                unknown_letter = list(word)[idx3]
+                break
+        hints = [1, unknown_letter] #List to hold hints
         print(newlength)
         print(f"You've guessed the following letters: {','.join(guess_list)}")
+        print(''.join(hints_given))
         print(HANGMANPICS[incorrect])
         if '_' not in newlength: #Final check, used when the word is fully guessed
             print(f'Congratulations, you guessed the word! it was {''.join(word)}')
