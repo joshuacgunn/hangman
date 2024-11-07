@@ -114,7 +114,7 @@ def hangman():
     
     number_of_hints = 0
     
-    hint_index = 0
+    hint_index = 1
 
     print(hangmanpics[incorrect_guesses]) 
     
@@ -127,15 +127,18 @@ def hangman():
             break
         else:
             continue
+    first_hint_check = 0
+    second_hint_check = 0
     hints_given = ['Hints: ', ] #List to hold hints given,
     vowels_guessed = 0
     while '_' in word_length: #Loop used for guessing, ends when the whole word is guessed
         vowels_left = vowel_count - vowels_guessed #This variable is for the first hint
-        #vowels_left = str(vowels_left) #Useful later on, as 
-        if len(hints_given) > 1 and number_of_hints > 0: #This is for constantly updating hints_given list, and printing it out. It needs to be here to work properly
-            hints_given.pop(1)
-            hints_given.insert(1, f'There are {vowels_left} vowels left in the word. ')
-            if number_of_hints > 0:
+        if len(hints_given) > 1 and number_of_hints > 0 and first_hint_check == 0: #This is for constantly updating hints_given list, and printing it out. It needs to be here to work properly
+            hints_given.pop(hint_index)
+            hints_given.insert(hint_index, f'There are {vowels_left} vowels left in the word. ')
+        if vowels_left == 0:
+            first_hint_check = 1
+        if number_of_hints > 0:
                 clear_lines(1)
                 print(''.join(hints_given[0:4]))
         if incorrect_guesses > 5:  #Check if the player has lost
@@ -148,9 +151,9 @@ def hangman():
         
         guess = input("Enter a letter or word you want to guess, or type hint for a hint: ")
         guess = guess.lower()
-        if guess == unknown_letter and number_of_hints == 2: #This is here to check and update hints_given if the user has inputted the unknown_letter variable
-            hints_given.pop(2)
-            hints_given.insert(2, ' ')
+        if second_hint_check == 1 and guess == unknown_letter: #This is here to check and update hints_given if the user has inputted the unknown_letter variable
+            if f'The next unguessed letter is {unknown_letter}. ' in hints_given:
+                hints_given.remove(f'The next unguessed letter is {unknown_letter}. ')
         if guess.isalpha() == False: #Check for numbers in the input
             print("Numbers aren't letters.")
             time.sleep(1)
@@ -159,14 +162,18 @@ def hangman():
         
         if guess == 'hint': #Checks if user has inputted hint, and prints a hint based on how many times they've asked for one
             clear_lines(1)
-            if number_of_hints == 0:
+            if number_of_hints == 0 and vowels_left > 0:
                 number_of_hints += 1
                 print(f'There are {vowels_left} vowels left in the word. ')
                 hints_given.append(f'There are {vowels_left} vowels left in the word.')
                 clear_lines(1)
-            elif number_of_hints == 1:
+            elif number_of_hints == 1 or vowels_left == 0 and second_hint_check == 0:
                 hints_given.append(f'The next unguessed letter is {unknown_letter}. ')
-                number_of_hints += 1
+                second_hint_check = 1
+                if vowels_left == 0:
+                    number_of_hints += 2
+                elif vowels_left > 0:
+                    number_of_hints += 1
             elif number_of_hints == 2:
                 letters_in_word = list(word)
                 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o','p','q','r','s','t','u','v','w','x','y','z']
