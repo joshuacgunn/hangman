@@ -17,7 +17,7 @@ def clear_lines(n):
 
 game_tracker = "previousgames.txt"
 
-r = RandomWord()
+r = RandomWord() #wonderwords variable
 
 hangmanpics = ['''
   +---+
@@ -78,8 +78,7 @@ hangmanpics = ['''
 '''] #List for holding hangman pictures
 
 def hangman():
-
-    word = r.word()
+    word = r.word() #Generates the word and assigns it to a variable
     if word == "hint": #Lazy way to make sure the word isn't hint, as that would interfere with code later on
         hangman()
     
@@ -94,9 +93,8 @@ def hangman():
 
     word=list(word)
 
-    if '-' in word: 
-        word.remove('-')
     print(hidden_word)
+   
     word_mutable = word #This variable is so the word can be manipulated without losing it
 
     vowel_count = 0 #Used for hints
@@ -112,9 +110,7 @@ def hangman():
 
     guess_list = [] #Used to keep track of guesses the user has made
     
-    word_guess_list = []
-
-    #hints_given = ['Hints: ', vowels_left] #List to hold hints given, 
+    word_guess_list = [] #Keep track of words guessed
     
     incorrect_guesses = 0 #Used to count how many incorrect_guesses guesses the user has inputted
     
@@ -122,7 +118,7 @@ def hangman():
     
     hint_index = 1 #This is used to properly pop and replace the vowels_left variable, it's needed as just using a number wouldn't work (I've tried many times)
 
-    print(hangmanpics[incorrect_guesses]) 
+    print(hangmanpics[incorrect_guesses]) #Prints the first element of hangmanpics
     
     revealed_letters = hidden_word #revealed_letters variable is for manipulating the hidden_word variable without directly changing it, used later 
     
@@ -133,13 +129,18 @@ def hangman():
             break
         else:
             continue
+    
     #The next couple of variables are for checking if a hint has been given, they're needed so the hint's list can be constantly updated
     first_hint_check = 0
     second_hint_check = 0
     fourth_hint_check = 0
+    
     hints_given = ['Hints: ', ] #List to hold hints given,
-    vowels_guessed = 0
+    
+    vowels_guessed = 0 #This holds how many vowels the user has guessed, it's also used for the vowels_left variable
+    
     letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o','p','q','r','s','t','u','v','w','x','y','z'] #Needed to give random_letter variables later on
+    
     while '_' in hidden_word: #Loop used for guessing, ends when the whole word is guessed
         def alwaysprint(): #This is what prints after every iteration, it's in function form so it doesn't have to be on a lot of different lines
             print(revealed_letters)
@@ -149,7 +150,8 @@ def hangman():
                 print(f"You've guessed the following words: {', '.join(word_guess_list)}")
             print(hangmanpics[incorrect_guesses])
         
-        vowels_left = vowel_count - vowels_guessed #This variable is for the first hint
+        vowels_left = vowel_count - vowels_guessed #Keeps track of the number of ungessed vowels in the word
+        
         if len(hints_given) > 1 and number_of_hints > 0 and first_hint_check == 0: #This is for constantly updating vowels_left variable in the hints_given list, and printing it out. It needs to be here to work properly
             hints_given.pop(hint_index)
             hints_given.insert(hint_index, f'There are {vowels_left} vowels left in the word. ')
@@ -236,7 +238,7 @@ def hangman():
                 if newgame2 == 'yes':
                     save_to_file = input("Would you like to save this game to a file? yes/no: ")
                     if save_to_file == 'yes':
-                        print("Game state saved to game_tracker.txt")
+                        print("Game state saved to previousgames.txt")
                         time.sleep(1)
                         with open(game_tracker, 'a') as file:
                             file.write(f"The word was: {revealed_letters}\nYou guessed the following letters: {','.join(guess_list)}\nYou used {number_of_hints} hints. {hangmanpics[incorrect_guesses]}")
@@ -298,7 +300,6 @@ def hangman():
                 break
             else:
                 continue
-        #hints = ['placeholder', unknown_letter] #List to hold hints
         alwaysprint()
         vowels = ['a', 'e', 'i', 'o', 'u']
         if guess in vowels: #This is for counting the vowels the user has guessed that are in the word
@@ -309,8 +310,8 @@ def hangman():
             newgame = input("Would you like to play again? yes/no: ")
             if newgame == 'yes':
                 save_to_file = input("Would you like to save this game to a file? yes/no: ")
-                if save_to_file == 'yes':
-                    print("Game state saved to game_tracker.txt")
+                if save_to_file == 'yes': #Conditional to save game state to file
+                    print("Game state saved to previousgames.txt")
                     time.sleep(1)
                     with open(game_tracker, 'a') as file:
                         file.write(f"The word was: {revealed_letters}\nYou guessed the following letters: {','.join(guess_list)}\nYou used {number_of_hints} hints. {hangmanpics[incorrect_guesses]}")
