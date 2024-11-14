@@ -195,12 +195,14 @@ def hangman():
 
         if guess == 'hint': #Checks if user has inputted hint, and prints a hint based on how many times they've asked for one
             clear_lines(1)
+            if vowels_left == 0 and number_of_hints == 0:
+                number_of_hints += 1
             if number_of_hints == 0 and vowels_left > 0: #This hint gives the user the number of variables left
                 number_of_hints += 1
                 print(f'There are {vowels_left} vowels left in the word. ')
                 hints_given.append(f'There are {vowels_left} vowels left in the word.')
                 clear_lines(1)
-            elif number_of_hints == 1 or vowels_left == 0 and second_hint_check == 0: #This hint gives the user the next unguessed letter
+            elif number_of_hints == 1 and second_hint_check == 0: #This hint gives the user the next unguessed letter
                 hints_given.append(f'The next unguessed letter is {unknown_letter}. ')
                 second_hint_check = 1
                 number_of_hints += 1
@@ -222,6 +224,7 @@ def hangman():
             elif number_of_hints == number_of_hints:
                 print("Theres no more hints to give!")
                 time.sleep(1)
+                clear_lines(1)
             continue
         
         if guess in guess_list: #Checks if the user has already guessed a letter
