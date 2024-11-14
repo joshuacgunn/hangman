@@ -15,6 +15,8 @@ def clear_lines(n):
     for _ in range(n):
         print("\033[F\033[K", end="")  #
 
+game_tracker = "previousgames.txt"
+
 r = RandomWord()
 
 hangmanpics = ['''
@@ -25,7 +27,7 @@ hangmanpics = ['''
       |
       |
 =========
-''', '''
+''','''
   +---+
   |   |
   O   |
@@ -33,7 +35,7 @@ hangmanpics = ['''
       |
       |
 =========
-''', '''
+''','''
   +---+
   |   |
   O   |
@@ -41,7 +43,7 @@ hangmanpics = ['''
       |
       |
 =========
-''', '''
+''','''
   +---+
   |   |
   O   |
@@ -49,7 +51,7 @@ hangmanpics = ['''
       |
       |
 =========
-''', '''
+''','''
   +---+
   |   |
   O   |
@@ -57,7 +59,7 @@ hangmanpics = ['''
       |
       |
 =========
-''', '''
+''','''
   +---+
   |   |
   O   |
@@ -65,7 +67,7 @@ hangmanpics = ['''
  /    |
       |
 =========
-''', '''
+''','''
   +---+
   |   |
   O   |
@@ -76,24 +78,25 @@ hangmanpics = ['''
 '''] #List for holding hangman pictures
 
 def hangman():
+
     word = r.word()
     if word == "hint": #Lazy way to make sure the word isn't hint, as that would interfere with code later on
         hangman()
     
-    word_length = ""
-    for i in list(word): #Appends an underscore into word_length for each character in the word
-        word_length += "_"
+    hidden_word = ""
+    for i in list(word): #Appends an underscore into hidden_word for each character in the word
+        hidden_word += "_"
         if " " in i:
-            word_length = list(word_length)
-            space_index = word_length.index(i)
-            word_length[space_index] == " "
-            ''.join(word_length)
+            hidden_word = list(hidden_word)
+            space_index = hidden_word.index(i)
+            hidden_word[space_index] == " "
+            ''.join(hidden_word)
 
     word=list(word)
-    
+
     if '-' in word: 
         word.remove('-')
-    print(word_length)
+    print(hidden_word)
     word_mutable = word #This variable is so the word can be manipulated without losing it
 
     vowel_count = 0 #Used for hints
@@ -109,6 +112,8 @@ def hangman():
 
     guess_list = [] #Used to keep track of guesses the user has made
     
+    word_guess_list = []
+
     #hints_given = ['Hints: ', vowels_left] #List to hold hints given, 
     
     incorrect_guesses = 0 #Used to count how many incorrect_guesses guesses the user has inputted
@@ -119,9 +124,9 @@ def hangman():
 
     print(hangmanpics[incorrect_guesses]) 
     
-    revealed_letters = word_length #revealed_letters variable is for manipulating the word_length variable without directly changing it, used later 
+    revealed_letters = hidden_word #revealed_letters variable is for manipulating the hidden_word variable without directly changing it, used later 
     
-    for und in list(word_length):
+    for und in list(hidden_word):
         if und == '_':
             idx3 = list(revealed_letters).index(und)
             unknown_letter = word[idx3]
@@ -135,7 +140,15 @@ def hangman():
     hints_given = ['Hints: ', ] #List to hold hints given,
     vowels_guessed = 0
     letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o','p','q','r','s','t','u','v','w','x','y','z'] #Needed to give random_letter variables later on
-    while '_' in word_length: #Loop used for guessing, ends when the whole word is guessed
+    while '_' in hidden_word: #Loop used for guessing, ends when the whole word is guessed
+        def alwaysprint(): #This is what prints after every iteration, it's in function form so it doesn't have to be on a lot of different lines
+            print(revealed_letters)
+            if len(guess_list) > 0:
+                print(f"You've guessed the following letters: {','.join(guess_list)}")
+            if len(word_guess_list) > 0:
+                print(f"You've guessed the following words: {', '.join(word_guess_list)}")
+            print(hangmanpics[incorrect_guesses])
+        
         vowels_left = vowel_count - vowels_guessed #This variable is for the first hint
         if len(hints_given) > 1 and number_of_hints > 0 and first_hint_check == 0: #This is for constantly updating vowels_left variable in the hints_given list, and printing it out. It needs to be here to work properly
             hints_given.pop(hint_index)
@@ -204,6 +217,9 @@ def hangman():
                 fourth_hint_check = 1
                 hints_given.append(f'The letter {random_letter_in_word} is in the word. ')
                 number_of_hints += 1
+            elif number_of_hints == number_of_hints:
+                print("Theres no more hints to give!")
+                time.sleep(1)
             continue
         
         if guess in guess_list: #Checks if the user has already guessed a letter
@@ -214,24 +230,30 @@ def hangman():
         
         if len(guess) > 1: #Checks if the user entered a word, and prints whether it's correct or not
             if guess == ''.join(word):
+                word_guess_list.append(guess)
                 print(f"That's the right word! You used {number_of_hints} hint(s).")
                 newgame2 = input("Would you like to play again? yes/no: ")
                 if newgame2 == 'yes':
+                    save_to_file = input("Would you like to save this game to a file? yes/no: ")
+                    if save_to_file == 'yes':
+                        print("Game state saved to game_tracker.txt")
+                        time.sleep(1)
+                        with open(game_tracker, 'a') as file:
+                            file.write(f"The word was: {revealed_letters}\nYou guessed the following letters: {','.join(guess_list)}\nYou used {number_of_hints} hints. {hangmanpics[incorrect_guesses]}")
                     clearconsole()
                     hangman()
                 else:
                     quit()
             else:
                 print(f"{guess} isn't the right word, sorry.")
+                word_guess_list.append(guess)
                 time.sleep(1)
                 incorrect_guesses += 1
                 clearconsole()
-                print(revealed_letters)
-                print(f"You've guessed the following letters: {','.join(guess_list)}")
-                print(hangmanpics[incorrect_guesses])
+                alwaysprint()
                 continue
         
-        word_length = list(word_length) #This is done so indexing and replacing can be done properly
+        hidden_word = list(hidden_word) #This is done so indexing and replacing can be done properly
 
         word = list(word) #Changes word to a list so it can be manipulated and indexed
 
@@ -243,9 +265,7 @@ def hangman():
             time.sleep(1)
             incorrect_guesses += 1
             clearconsole()
-            print(revealed_letters)
-            print(f"You've guessed the following letters: {','.join(guess_list)}")
-            print(hangmanpics[incorrect_guesses])
+            alwaysprint()
             continue
 
         if guess in word:
@@ -259,10 +279,10 @@ def hangman():
             idx2 += 1 #Used to index where the letter is in the word
             if guess in i:
                 idx=word_mutable.index(guess) #Indexes where the guessed letter is 
-                word_length[idx]=guess #Replaces the underscore where the letter is with the letter
+                hidden_word[idx]=guess #Replaces the underscore where the letter is with the letter
                 word_mutable.remove(i) #Removes the underscore where the guessed letter is 
                 word_mutable.insert(idx2, '.') #This is done so the word has the same length, which is needed for proper indexing 
-                revealed_letters=''.join(word_length) #Variable that changes word_length into a string
+                revealed_letters=''.join(hidden_word) #Variable that changes hidden_word into a string
         
         if 'hint' in guess_list: #Removes the word hint from guess_list
             guess_list.remove('hint')
@@ -271,7 +291,7 @@ def hangman():
             if guess_list.count(i) > 1: 
                 guess_list.remove(i)
         
-        for und in list(word_length): #This is for telling the next unguessed word. !!!!IT NEEDS TO BE HERE AND AT THE TOP OF THE LOOP FOR PROPER FUNCTIONALITY!!!!
+        for und in list(hidden_word): #This is for telling the next unguessed word. !!!!IT NEEDS TO BE HERE AND AT THE TOP OF THE LOOP FOR PROPER FUNCTIONALITY!!!!
             if und == '_':
                 idx3 = list(revealed_letters).index(und)
                 unknown_letter = list(word)[idx3]
@@ -279,9 +299,7 @@ def hangman():
             else:
                 continue
         #hints = ['placeholder', unknown_letter] #List to hold hints
-        print(revealed_letters)
-        print(f"You've guessed the following letters: {','.join(guess_list)}")
-        print(hangmanpics[incorrect_guesses])
+        alwaysprint()
         vowels = ['a', 'e', 'i', 'o', 'u']
         if guess in vowels: #This is for counting the vowels the user has guessed that are in the word
             vowels_guessed += (list(revealed_letters).count(guess))
@@ -290,6 +308,12 @@ def hangman():
             print(f'Congratulations, you guessed the word! it was "{''.join(word)}". You used {number_of_hints} hint(s).')
             newgame = input("Would you like to play again? yes/no: ")
             if newgame == 'yes':
+                save_to_file = input("Would you like to save this game to a file? yes/no: ")
+                if save_to_file == 'yes':
+                    print("Game state saved to game_tracker.txt")
+                    time.sleep(1)
+                    with open(game_tracker, 'a') as file:
+                        file.write(f"The word was: {revealed_letters}\nYou guessed the following letters: {','.join(guess_list)}\nYou used {number_of_hints} hints. {hangmanpics[incorrect_guesses]}")
                 clearconsole()
                 hangman()
             else:
