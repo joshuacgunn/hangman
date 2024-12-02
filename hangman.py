@@ -75,7 +75,7 @@ hangmanpics = ['''
  / \  |
       |
 =========
-'''] #List for holding hangman pictures
+'''] 
 
 def hangman():
     word = r.word() #Generates the word and assigns it to a variable
@@ -92,8 +92,6 @@ def hangman():
             ''.join(hidden_word)
 
     word=list(word)
-
-    print(hidden_word)
    
     word_mutable = word #This variable is so the word can be manipulated without losing it
 
@@ -118,7 +116,8 @@ def hangman():
     
     hint_index = 1 #This is used to properly pop and replace the vowels_left variable, it's needed as just using a number wouldn't work (I've tried many times)
 
-    print(hangmanpics[incorrect_guesses]) #Prints the first element of hangmanpics
+    print(hidden_word)
+    print(hangmanpics[incorrect_guesses]) 
     
     revealed_letters = hidden_word #revealed_letters variable is for manipulating the hidden_word variable without directly changing it, used later 
     
@@ -232,7 +231,7 @@ def hangman():
             time.sleep(1)
             clear_lines(2)
             continue
-        
+
         if len(guess) > 1: #Checks if the user entered a word, and prints whether it's correct or not
             if guess == ''.join(word):
                 word_guess_list.append(guess)
@@ -244,7 +243,7 @@ def hangman():
                         print("Game state saved to previousgames.txt")
                         time.sleep(1)
                         with open(game_tracker, 'a') as file:
-                            file.write(f"The word was: {revealed_letters}\nYou guessed the following letters: {','.join(guess_list)}\nYou used {number_of_hints} hints. {hangmanpics[incorrect_guesses]}")
+                            file.write(f"The word was: {revealed_letters}\nYou guessed the following letters: {','.join(guess_list)}\nYou guessed the following words: {''.join(word_guess_list)}\nYou used {number_of_hints} hints. {hangmanpics[incorrect_guesses]}")
                     clearconsole()
                     hangman()
                 else:
