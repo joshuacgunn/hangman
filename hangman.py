@@ -4,16 +4,14 @@ import time
 import platform
 import random
 
-def clearconsole(): #Used to clear console, this exists because linux and windows clear the console with different commands
-    if platform.system() == 'Linux' or platform.system() == 'Darwin':
-        os.system('clear') 
-    elif platform.system() == 'Windows':
-        os.system('cls')
+def clearconsole():
+    os.system('cls' if platform.system() == 'Windows' else 'clear')
 
 def clear_lines(n):
     #Clears the last 'n' lines in the terminal
     for _ in range(n):
         print("\033[F\033[K", end="")  #
+
 
 game_tracker = "previousgames.txt"
 
@@ -90,10 +88,8 @@ def hangman():
             space_index = hidden_word.index(i)
             hidden_word[space_index] == " "
             ''.join(hidden_word)
-
-    word=list(word)
    
-    word_mutable = word #This variable is so the word can be manipulated without losing it
+    word_mutable = list(word) #This variable is so the word can be manipulated without losing it
 
     vowel_count = 0 #Used for hints
     for i in word: #Counts the number of vowels in the word
@@ -139,6 +135,15 @@ def hangman():
     vowels_guessed = 0 #This holds how many vowels the user has guessed, it's also used for the vowels_left variable
     
     letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o','p','q','r','s','t','u','v','w','x','y','z'] #Needed to give random_letter variables later on
+    
+    def save_to_file():
+        save_to_file = input("Would you like to save this game to a file? yes/no: ")
+        if save_to_file == 'yes': #Conditional to save game state to file
+            print("Game state saved to previousgames.txt")
+            time.sleep(1)
+            with open(game_tracker, 'a') as file:
+                file.write(f"The word was: {''.join(word)}\nYou guessed the following letters: {','.join(guess_list)}\nYou used {number_of_hints} hints. {hangmanpics[incorrect_guesses]}")
+        clearconsole()
     
     while '_' in hidden_word: #Loop used for guessing, ends when the whole word is guessed
         def alwaysprint(): #This is what prints after every iteration, it's in function form so it doesn't have to be on a lot of different lines
@@ -238,15 +243,10 @@ def hangman():
                 print(f"That's the right word! You used {number_of_hints} hint(s).")
                 newgame2 = input("Would you like to play again? yes/no: ")
                 if newgame2 == 'yes':
-                    save_to_file = input("Would you like to save this game to a file? yes/no: ")
-                    if save_to_file == 'yes':
-                        print("Game state saved to previousgames.txt")
-                        time.sleep(1)
-                        with open(game_tracker, 'a') as file:
-                            file.write(f"The word was: {revealed_letters}\nYou guessed the following letters: {','.join(guess_list)}\nYou guessed the following words: {''.join(word_guess_list)}\nYou used {number_of_hints} hints. {hangmanpics[incorrect_guesses]}")
-                    clearconsole()
+                    save_to_file()
                     hangman()
                 else:
+                    save_to_file()
                     quit()
             else:
                 print(f"{guess} isn't the right word, sorry.")
@@ -311,15 +311,10 @@ def hangman():
             print(f'Congratulations, you guessed the word! it was "{''.join(word)}". You used {number_of_hints} hint(s).')
             newgame = input("Would you like to play again? yes/no: ")
             if newgame == 'yes':
-                save_to_file = input("Would you like to save this game to a file? yes/no: ")
-                if save_to_file == 'yes': #Conditional to save game state to file
-                    print("Game state saved to previousgames.txt")
-                    time.sleep(1)
-                    with open(game_tracker, 'a') as file:
-                        file.write(f"The word was: {revealed_letters}\nYou guessed the following letters: {','.join(guess_list)}\nYou used {number_of_hints} hints. {hangmanpics[incorrect_guesses]}")
-                clearconsole()
+                save_to_file()
                 hangman()
             else:
+                save_to_file()
                 quit()
 
 clearconsole()
