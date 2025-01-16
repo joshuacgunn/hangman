@@ -228,7 +228,8 @@ def hangman():
             elif number_of_hints == number_of_hints:
                 print("Theres no more hints to give!")
                 time.sleep(1)
-                clear_lines(1)
+                clearconsole()
+                alwaysprint()
             continue
         
         if guess in guess_list: #Checks if the user has already guessed a letter
